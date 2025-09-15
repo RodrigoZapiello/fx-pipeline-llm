@@ -22,9 +22,12 @@ services:
   dashboard:
     build: .
     env_file: .env
+    entrypoint: ""  # garante que não vai rodar o cli.py
     command: streamlit run src/dashboard/app.py --server.port=8501 --server.address=0.0.0.0
     volumes:
       - ./data:/app/data
+      - ./.streamlit:/home/appuser/.streamlit:ro
+      - ./.streamlit:/app/.streamlit:ro
     ports:
       - "8501:8501"
     depends_on:

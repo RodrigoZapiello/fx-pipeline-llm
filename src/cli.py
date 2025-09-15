@@ -1,25 +1,33 @@
 import typer
-from .config import settings
-from .logging_conf import setup_logging
-from . import ingest, transform, load
+from .ingest import run as ingest_run
+from .transform import run as transform_run
+from .load import run as load_run
+from .llm_summarize import run as llm_run
 
-app = typer.Typer(help="fx-pipeline-llm CLI")
+app = typer.Typer(help="FX Pipeline + LLM")
 
-@app.callback()
-def main(log_level: str = settings.log_level):
-    setup_logging(log_level)
+@app.command()
+def run_all():
+    ingest_run()
+    transform_run()
+    load_run()
+    llm_run()
 
-@app.command()       # python -m src.cli ingest
-def ingest_cmd(): ingest.run(settings)
+@app.command()
+def ingest():
+    ingest_run()
 
-@app.command()       # python -m src.cli transform
-def transform_cmd(): transform.run(settings)
+@app.command()
+def transform():
+    transform_run()
 
-@app.command()       # python -m src.cli load
-def load_cmd(): load.run(settings)
+@app.command()
+def load():
+    load_run()
 
-@app.command()       # python -m src.cli all
-def all(): ingest.run(settings); transform.run(settings); load.run(settings)
+@app.command()
+def insights():
+    llm_run()
 
 if __name__ == "__main__":
     app()

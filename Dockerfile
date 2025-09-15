@@ -17,4 +17,5 @@ COPY . .
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
-ENTRYPOINT ["python", "-m", "src.cli"]
+CMD ["python", "-m", "src.cli"]
+
