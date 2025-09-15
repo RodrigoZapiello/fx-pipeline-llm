@@ -1,0 +1,37 @@
+name: CI & Daily Ingest
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 12 * * *"
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+
+  daily-pipeline:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    env:
+      EXCHANGE_API_BASE: ${{ secrets.EXCHANGE_API_BASE }}
+      EXCHANGE_API_KEY:  ${{ secrets.EXCHANGE_API_KEY }}
+      BASE_CURRENCY:     BRL
+      LLM_PROVIDER:      openai
+      OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - run: python -m src.cli run-all
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gold-artifacts
+          path: data/gold/**
