@@ -20,6 +20,7 @@ jobs:
   daily-pipeline:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
+    environment: Teste         # <— ISSO é o que habilita seus Environment secrets
     env:
       EXCHANGE_API_BASE: ${{ secrets.EXCHANGE_API_BASE }}
       EXCHANGE_API_KEY:  ${{ secrets.EXCHANGE_API_KEY }}
